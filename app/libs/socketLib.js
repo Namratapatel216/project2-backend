@@ -13,6 +13,7 @@ const fs = require('fs');
 const dropboxV2Api = require('dropbox-v2-api');
 const commentModel = mongoose.model('comment');
 const NotificationModel = mongoose.model('Notification');
+var request = require('request');
 
 // function to create file from base64 encoded string
 function base64_decode(base64str, file) {
@@ -75,8 +76,28 @@ let setServer = (server) => {
             else {
                 var base64result = data['issue_attachment_path'].substr(data['issue_attachment_path'].indexOf(',') + 1);
                 var image_path = base64_decode(base64result, data['issue_attachment_name']);
-                data['check_for_what'] = "issue_creation"
-                const dropbox = dropboxV2Api.authenticate({
+                data['check_for_what'] = "issue_creation";
+                var access_token = "8OFJNocMFEAAAAAAAAAAWEuCMWkPSlal0hUm57GdKkJCmW0uRH09u0YZykmztpOU";
+                //Name of the file to be uploaded
+                var filename = data['issue_attachment_name'];
+                var content =  fs.createReadStream(data['issue_attachment_name']);
+                options = {
+                    method: "POST",
+                    url: 'https://content.dropboxapi.com/2/files/upload',
+                    headers: {
+                      "Content-Type": "application/octet-stream",
+                      "Authorization": "Bearer " + access_token,
+                      "Dropbox-API-Arg": "{\"path\": \"/YOUR_PATH_TO_FOLDER/"+filename+"\",\"mode\": \"overwrite\",\"autorename\": true,\"mute\": false}",
+                    },
+                    body:content
+                };
+
+                request(options,function(err, res,body){
+                    console.log("Err : " + err);
+                    console.log("res : " + res);
+                    console.log("body : " + body);    
+                });
+                /* const dropbox = dropboxV2Api.authenticate({
                     token: '8OFJNocMFEAAAAAAAAAAWEuCMWkPSlal0hUm57GdKkJCmW0uRH09u0YZykmztpOU'
                 });
                 dropbox({
@@ -108,7 +129,7 @@ let setServer = (server) => {
                         socket.to('edchat').broadcast.emit('send-all-async-issues', data);
                         myio.emit(data.issue_reporter, data);
                     }
-                });
+                }); */
             }
         });//end of create issue function
 
