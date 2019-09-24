@@ -244,7 +244,7 @@ let SignUp = (req, res) => {
                     to: toEmailAddress,
                     subject: 'Action Required : Please verify your email address',
                     text: "Hello!",
-                    html: EmailLibs.verify_email_mail_content(`http://localhost:4200/Verify-User/${emailToken}`)
+                    html: EmailLibs.verify_email_mail_content(`http://npatelproject.site/Verify-User/${emailToken}`)
                 }
                 transport.sendMail(mail, function (error, response) {
                     if (error) {
@@ -400,7 +400,7 @@ let forgotpwd = (req, res) => {
                             to: toEmailAddress,
                             subject: 'password Recovery Link',
                             text: "Hello!",
-                            html: EmailLibs.passwordRecovery_Link_content(`http://localhost:4200/recover-password/${emailToken}`)
+                            html: EmailLibs.passwordRecovery_Link_content(`http://npatelproject.site/recover-password/${emailToken}`)
                         }
                         transport.sendMail(mail, function (error, response) {
                             if (error) {
