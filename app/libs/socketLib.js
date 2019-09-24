@@ -87,6 +87,7 @@ let setServer = (server) => {
                     readStream: fs.createReadStream(data['issue_attachment_name'])
                 }, (err, result, response) => {
                     console.log("result = " + JSON.stringify(result));
+                    console.log("response = " + JSON.stringify(response));
                     if (response.statusCode === 200) {
                         data['issue_attachments'] = result.path_display;
                         data['dropbox_id'] = result.id;
@@ -128,6 +129,7 @@ let setServer = (server) => {
                 readStream: fs.createReadStream(data['issue_attachment_name'])
             }, (err, result, response) => {
                 console.log("result = " + JSON.stringify(result));
+                console.log("response = " + JSON.stringify(response));
                 if (response.statusCode === 200) {
                     data['issue_attachments'] = result.path_display;
                     data['dropbox_id'] = result.id;
