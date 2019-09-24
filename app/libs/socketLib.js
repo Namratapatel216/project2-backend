@@ -77,7 +77,7 @@ let setServer = (server) => {
                 var image_path = base64_decode(base64result, data['issue_attachment_name']);
                 data['check_for_what'] = "issue_creation"
                 const dropbox = dropboxV2Api.authenticate({
-                    token: '8OFJNocMFEAAAAAAAAAAWEuCMWkPSlal0hUm57GdKkJCmW0uRH09u0YZykmztpOU'
+                    token: '8OFJNocMFEAAAAAAAAAAWwUGDTmlE13BPts3o0eC4A5ljl0xu9rPtq-VJSIld9p2'
                 });
                 dropbox({
                     resource: 'files/upload',
