@@ -1,6 +1,6 @@
 const appConfing = {};
 
-appConfing.port = "3000";
+appConfing.port = "3001";
 appConfing.allowedCorsOrigin = "*";
 appConfing.db = {
     uri : "mongodb://127.0.0.1:27017/Issue-track"

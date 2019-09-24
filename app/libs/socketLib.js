@@ -12,7 +12,7 @@ const issueModel = mongoose.model('Issue');
 const fs = require('fs');
 const dropboxV2Api = require('dropbox-v2-api');
 const commentModel = mongoose.model('comment');
-
+const NotificationModel = mongoose.model('Notification');
 
 // function to create file from base64 encoded string
 function base64_decode(base64str, file) {
@@ -56,9 +56,16 @@ let setServer = (server) => {
         //create issue function is strated
         socket.on('create-issue', (data) => {
             console.log("create - issue is ccalled")
+            data['issueId'] = shortid.generate();
+            data['notificationId'] = shortid.generate();
+            data['notificationTitle'] = `${data.issue_reporter_name} Created Issue ${data.issue_title}`;
+            data['Notification_issue_id'] = data.issueId;
+            data['notification_occurs'] = 'creation';
+            data['notitification_issue_reporter'] = data['issue_reporter'];
+            data['notification_issue_assignee'] = data['issue_assignee'];
+            data['notification_issue_watchers'] = ',';
             if (data['issue_attachment_path'] === undefined || data['issue_attachment_path'] === null || data['issue_attachment_path'] === '') {
                 data['check_for_what'] = "issue_creation"
-                data['issueId'] = shortid.generate();
                 setTimeout(function () {
                     eventEmitter.emit('save-issue', data);
                 }, 2000);
@@ -69,7 +76,6 @@ let setServer = (server) => {
                 var base64result = data['issue_attachment_path'].substr(data['issue_attachment_path'].indexOf(',') + 1);
                 var image_path = base64_decode(base64result, data['issue_attachment_name']);
                 data['check_for_what'] = "issue_creation"
-                data['issueId'] = shortid.generate();
                 const dropbox = dropboxV2Api.authenticate({
                     token: '6hPiXZkjq4AAAAAAAAAAH9B5muHXcLt-aPHlHHmNQwwcZGN2HnvnGrBqkf4pPkj9'
                 });
@@ -148,8 +154,15 @@ let setServer = (server) => {
         });
 
         socket.on('update_title', (titleDetails) => {
-            console.log("updated title is called")
+            titleDetails['notificationId'] = shortid.generate();
+            titleDetails['notificationTitle'] = `${titleDetails.updated_by} Updated Issue Title ${titleDetails.new_issue_title}`;
+            titleDetails['Notification_issue_id'] = titleDetails.issue_id;
+            titleDetails['notification_occurs'] = 'updation';
+            titleDetails['notitification_issue_reporter'] = titleDetails['issue_reporter'];
+            titleDetails['notification_issue_assignee'] = titleDetails['issue_assignee'];
+            titleDetails['notification_issue_watchers'] = titleDetails['issue_watchers'];
             titleDetails['check_for_what'] = "title_updated";
+
             setTimeout(function () {
                 eventEmitter.emit('update-title', titleDetails);
             });
@@ -158,6 +171,13 @@ let setServer = (server) => {
         });
 
         socket.on('update_description', (descriptionDetails) => {
+            descriptionDetails['notificationId'] = shortid.generate();
+            descriptionDetails['notificationTitle'] = `${descriptionDetails.updated_by} Updated Description of ${descriptionDetails.issue_title}`;
+            descriptionDetails['Notification_issue_id'] = descriptionDetails.issue_id;
+            descriptionDetails['notification_occurs'] = 'updation';
+            descriptionDetails['notitification_issue_reporter'] = descriptionDetails['issue_reporter'];
+            descriptionDetails['notification_issue_assignee'] = descriptionDetails['issue_assignee'];
+            descriptionDetails['notification_issue_watchers'] = descriptionDetails['issue_watchers'];
             console.log("updated description is called")
             descriptionDetails['check_for_what'] = "description_updated";
             setTimeout(function () {
@@ -168,7 +188,13 @@ let setServer = (server) => {
         })
 
         socket.on('update-assignee', (assigneeDetails) => {
-            console.log("updated assignee is called")
+            assigneeDetails['notificationId'] = shortid.generate();
+            assigneeDetails['notificationTitle'] = `${assigneeDetails.updated_by} Updated Assignee of ${assigneeDetails.issue_title}`;
+            assigneeDetails['Notification_issue_id'] = assigneeDetails.issueId;
+            assigneeDetails['notification_occurs'] = 'updation';
+            assigneeDetails['notitification_issue_reporter'] = assigneeDetails['issue_reporter'];
+            assigneeDetails['notification_issue_assignee'] = assigneeDetails['issue_assignee'];
+            assigneeDetails['notification_issue_watchers'] = `${assigneeDetails['issue_watchers']},${assigneeDetails['updated_assignee_id']}`;
             assigneeDetails['check_for_what'] = "assignee_updated";
             setTimeout(function () {
                 eventEmitter.emit('update-Assignee', assigneeDetails);
@@ -178,6 +204,13 @@ let setServer = (server) => {
         });
 
         socket.on('update-reporter', (reporterDetails) => {
+            reporterDetails['notificationId'] = shortid.generate();
+            reporterDetails['notificationTitle'] = `${reporterDetails.updated_by} Updated Reporter of ${reporterDetails.issue_title}`;
+            reporterDetails['Notification_issue_id'] = reporterDetails.issueId;
+            reporterDetails['notification_occurs'] = 'updation';
+            reporterDetails['notitification_issue_reporter'] = reporterDetails['issue_reporter'];
+            reporterDetails['notification_issue_assignee'] = reporterDetails['issue_assignee'];
+            reporterDetails['notification_issue_watchers'] = `${reporterDetails['issue_watchers']},${reporterDetails['updated_reporter_id']}`;
             console.log("updated reporter is called")
             reporterDetails['check_for_what'] = "reporter_updated";
             setTimeout(function () {
@@ -188,6 +221,13 @@ let setServer = (server) => {
         });
 
         socket.on('update-issue-status', (statusDetails) => {
+            statusDetails['notificationId'] = shortid.generate();
+            statusDetails['notificationTitle'] = `${statusDetails.updated_by} Updated Status of ${statusDetails.issue_title}`;
+            statusDetails['Notification_issue_id'] = statusDetails.issueId;
+            statusDetails['notification_occurs'] = 'updation';
+            statusDetails['notitification_issue_reporter'] = statusDetails['issue_reporter'];
+            statusDetails['notification_issue_assignee'] = statusDetails['issue_assignee'];
+            statusDetails['notification_issue_watchers'] = `${statusDetails['issue_watchers']}`;
             console.log("updated issue status is called")
             statusDetails['check_for_what'] = "status_updated";
             setTimeout(function () {
@@ -198,6 +238,13 @@ let setServer = (server) => {
         });
 
         socket.on('add-comment', (commentDetails) => {
+            commentDetails['notificationId'] = shortid.generate();
+            commentDetails['notificationTitle'] = `${commentDetails.updated_by} Commented On ${commentDetails.issue_title}`;
+            commentDetails['Notification_issue_id'] = commentDetails.issueId;
+            commentDetails['notification_occurs'] = 'updation';
+            commentDetails['notitification_issue_reporter'] = commentDetails['issue_reporter'];
+            commentDetails['notification_issue_assignee'] = commentDetails['issue_assignee'];
+            commentDetails['notification_issue_watchers'] = `${commentDetails['issue_watchers']}`;
             console.log("add comment is called");
             commentDetails['check_for_what'] = "comment_added";
             commentDetails['commentId'] = shortid.generate();
@@ -213,6 +260,14 @@ let setServer = (server) => {
                 eventEmitter.emit('add_watcher', data);
             });
             myio.emit(data['issueId'], data);
+        });
+
+        socket.on('update-notification',(data) => {
+            data['check_for_what'] = "Notification_updated";
+            setTimeout(function () {
+                eventEmitter.emit('Update-Notification', data);
+            });
+            socket.to('edchat').broadcast.emit('send-all-async-issues', data);
         });
 
         socket.on('disconnect', () => {
@@ -253,6 +308,27 @@ eventEmitter.on('save-issue', (issueDetails) => {
         else {
             console.log('issue saved');
             console.log(result);
+            let notificationData = new NotificationModel({
+                notificationId : issueDetails['notificationId'],
+                notificationTitle : issueDetails['notificationTitle'],
+                Notification_issue_id :issueDetails['issueId'],
+                notification_occurs : 'creation',
+                notitification_issue_reporter : issueDetails['issue_reporter'],
+                notification_issue_assignee : issueDetails['issue_assignee'],
+                notification_issue_watchers : ','
+            })
+            notificationData.save((err,result) => {
+                if (err) {
+                    console.log(`error occured ${err}`);
+                }
+                else if (check.isEmpty(result)) {
+                    console.log('notification is not saved');
+                }
+                else
+                {
+                    console.log('notification saved');
+                }
+            })
         }
     });
 });
@@ -268,7 +344,29 @@ eventEmitter.on('update-title', (titleDetails) => {
             }
             else {
                 console.log("issue title is updated");
-            }
+                let notificationData = new NotificationModel({
+                    notificationId : titleDetails['notificationId'],
+                    notificationTitle : titleDetails['notificationTitle'],
+                    Notification_issue_id :titleDetails['Notification_issue_id'],
+                    notification_occurs : titleDetails['notification_occurs'],
+                    notitification_issue_reporter : titleDetails['notitification_issue_reporter'],
+                    notification_issue_assignee : titleDetails['notification_issue_assignee'],
+                    notification_issue_watchers : titleDetails['notification_issue_watchers']
+                });
+                console.log(JSON.stringify(notificationData))
+                notificationData.save((err,result) => {
+                    if (err) {
+                        console.log(`error occured ${err}`);
+                    }
+                    else if (check.isEmpty(result)) {
+                        console.log('notification is not saved');
+                    }
+                    else
+                    {
+                        console.log('notification saved');
+                    }
+                });
+            }   
         })
 });
 
@@ -298,6 +396,28 @@ eventEmitter.on('update-description', (data) => {
             }
             else {
                 console.log("description updated");
+                let notificationData = new NotificationModel({
+                    notificationId : data['notificationId'],
+                    notificationTitle : data['notificationTitle'],
+                    Notification_issue_id :data['Notification_issue_id'],
+                    notification_occurs : data['notification_occurs'],
+                    notitification_issue_reporter : data['notitification_issue_reporter'],
+                    notification_issue_assignee : data['notification_issue_assignee'],
+                    notification_issue_watchers : data['notification_issue_watchers']
+                });
+                console.log(JSON.stringify(notificationData))
+                notificationData.save((err,result) => {
+                    if (err) {
+                        console.log(`error occured ${err}`);
+                    }
+                    else if (check.isEmpty(result)) {
+                        console.log('notification is not saved');
+                    }
+                    else
+                    {
+                        console.log('notification saved');
+                    }
+                });
             }
         })
 });
@@ -313,6 +433,28 @@ eventEmitter.on('update-Assignee', (data) => {
             }
             else {
                 console.log("asssignee updated");
+                let notificationData = new NotificationModel({
+                    notificationId : data['notificationId'],
+                    notificationTitle : data['notificationTitle'],
+                    Notification_issue_id :data['Notification_issue_id'],
+                    notification_occurs : data['notification_occurs'],
+                    notitification_issue_reporter : data['notitification_issue_reporter'],
+                    notification_issue_assignee : data['notification_issue_assignee'],
+                    notification_issue_watchers : data['notification_issue_watchers']
+                });
+                console.log(JSON.stringify(notificationData))
+                notificationData.save((err,result) => {
+                    if (err) {
+                        console.log(`error occured ${err}`);
+                    }
+                    else if (check.isEmpty(result)) {
+                        console.log('notification is not saved');
+                    }
+                    else
+                    {
+                        console.log('notification saved');
+                    }
+                });
             }
         })
 });
@@ -328,6 +470,28 @@ eventEmitter.on('update-Reporter', (data) => {
             }
             else {
                 console.log("reporter updated");
+                let notificationData = new NotificationModel({
+                    notificationId : data['notificationId'],
+                    notificationTitle : data['notificationTitle'],
+                    Notification_issue_id :data['Notification_issue_id'],
+                    notification_occurs : data['notification_occurs'],
+                    notitification_issue_reporter : data['notitification_issue_reporter'],
+                    notification_issue_assignee : data['notification_issue_assignee'],
+                    notification_issue_watchers : data['notification_issue_watchers']
+                });
+                console.log(JSON.stringify(notificationData))
+                notificationData.save((err,result) => {
+                    if (err) {
+                        console.log(`error occured ${err}`);
+                    }
+                    else if (check.isEmpty(result)) {
+                        console.log('notification is not saved');
+                    }
+                    else
+                    {
+                        console.log('notification saved');
+                    }
+                });
             }
         })
 });
@@ -343,6 +507,28 @@ eventEmitter.on('update_issue_status', (data) => {
             }
             else {
                 console.log("reporter updated");
+                let notificationData = new NotificationModel({
+                    notificationId : data['notificationId'],
+                    notificationTitle : data['notificationTitle'],
+                    Notification_issue_id :data['Notification_issue_id'],
+                    notification_occurs : data['notification_occurs'],
+                    notitification_issue_reporter : data['notitification_issue_reporter'],
+                    notification_issue_assignee : data['notification_issue_assignee'],
+                    notification_issue_watchers : data['notification_issue_watchers']
+                });
+                console.log(JSON.stringify(notificationData))
+                notificationData.save((err,result) => {
+                    if (err) {
+                        console.log(`error occured ${err}`);
+                    }
+                    else if (check.isEmpty(result)) {
+                        console.log('notification is not saved');
+                    }
+                    else
+                    {
+                        console.log('notification saved');
+                    }
+                });
             }
         })
 });
@@ -382,9 +568,48 @@ eventEmitter.on('save-comment', (data) => {
         }
         else {
             console.log('comment saved');
-            console.log(result);
+            let notificationData = new NotificationModel({
+                notificationId : data['notificationId'],
+                notificationTitle : data['notificationTitle'],
+                Notification_issue_id :data['Notification_issue_id'],
+                notification_occurs : data['notification_occurs'],
+                notitification_issue_reporter : data['notitification_issue_reporter'],
+                notification_issue_assignee : data['notification_issue_assignee'],
+                notification_issue_watchers : data['notification_issue_watchers']
+            });
+            console.log(JSON.stringify(notificationData))
+            notificationData.save((err,result) => {
+                if (err) {
+                    console.log(`error occured ${err}`);
+                }
+                else if (check.isEmpty(result)) {
+                    console.log('notification is not saved');
+                }
+                else
+                {
+                    console.log('notification saved');
+                }
+            });
         }
     });
+});
+
+eventEmitter.on('Update-Notification',(data) => {
+    NotificationModel.updateOne({notificationId:data.notificationId,Notification_issue_id:data.Notification_issue_id},{notification_watched_by:data.notification_watched_by})
+    .exec((err,result) => {
+        if(err)
+        {
+            console.log(err);
+        }
+        else if(check.isEmpty(result))
+        {
+            console.log("notification not found");
+        }
+        else
+        {
+            console.log("notification updated");
+        }
+    })
 })
 
 module.exports = {
