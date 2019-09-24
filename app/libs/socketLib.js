@@ -77,7 +77,7 @@ let setServer = (server) => {
                 var image_path = base64_decode(base64result, data['issue_attachment_name']);
                 data['check_for_what'] = "issue_creation"
                 const dropbox = dropboxV2Api.authenticate({
-                    token: '6hPiXZkjq4AAAAAAAAAAH9B5muHXcLt-aPHlHHmNQwwcZGN2HnvnGrBqkf4pPkj9'
+                    token: '6hPiXZkjq4AAAAAAAAAATsj46IJDvR-zHmY-dclcGZmRYWdXxSdrY-Y4W21tnzP_'
                 });
                 dropbox({
                     resource: 'files/upload',
@@ -118,7 +118,7 @@ let setServer = (server) => {
             var image_path = base64_decode(base64result, data['issue_attachment_name']);
             data['check_for_what'] = "attachment_updated";
             const dropbox = dropboxV2Api.authenticate({
-                token: '6hPiXZkjq4AAAAAAAAAAH9B5muHXcLt-aPHlHHmNQwwcZGN2HnvnGrBqkf4pPkj9'
+                token: '6hPiXZkjq4AAAAAAAAAATsj46IJDvR-zHmY-dclcGZmRYWdXxSdrY-Y4W21tnzP_'
             });
             dropbox({
                 resource: 'files/upload',
